@@ -1,5 +1,11 @@
 var windowHeight;
 var chart;
+var j1 = "Benjamin";
+var j2 = "Erwan";
+var j3 = "Franck";
+var j4 = "Richard";
+var j5 = "Tarik";
+var scores = new Array(j1,j2,j3,j4,j5);
 
 $(document).ready(function (){
     windowHeight = $(window).height();
@@ -19,34 +25,62 @@ $(document).ready(function (){
     $("div#graphWinRate").click(function(){
         graphWinRate();
     });
+    
+    initScores();
+    calculateScores();
 });
+
+function initScores(){
+    scores[j1] = new Array();
+    scores[j2] = new Array();
+    scores[j3] = new Array();
+    scores[j4] = new Array();
+    scores[j5] = new Array();
+    
+    scores[j1].push(0);
+    scores[j2].push(0);
+    scores[j3].push(0);
+    scores[j4].push(0);
+    scores[j5].push(0);
+}
+
+function calculateScores(){
+    var compteur = 30;
+    var i = 1;
+    for(i; i<compteur; i++){
+        scores[j1].push(scores[j1][i-1]+Math.floor((Math.random()-0.5))*10);
+        scores[j2].push(scores[j1][i-1]+Math.floor((Math.random()-0.5))*20);
+        scores[j3].push(scores[j1][i-1]+Math.floor((Math.random()-0.5))*30);
+        scores[j4].push(scores[j1][i-1]+Math.floor((Math.random()-0.5))*40);
+        scores[j5].push(scores[j1][i-1]+Math.floor((Math.random()-0.5))*50);
+    }
+}
 
 function graphScores(){
     $("div#graph").highcharts({
+        chart: {
+            zoomType: 'x',
+            animation: false
+        },
         title: {
-            text: 'Monthly Average Temperature',
+            text: 'Evolution des scores',
             x: -20 //center
-        },
-        subtitle: {
-            text: 'Source: WorldClimate.com',
-            x: -20
-        },
-        xAxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         },
         yAxis: {
             title: {
-                text: 'Temperature (°C)'
+                text: 'Points'
             },
             plotLines: [{
                 value: 0,
-                width: 1,
-                color: '#808080'
+                width: 3,
+                color: 'black'
             }]
         },
         tooltip: {
-            valueSuffix: '°C'
+            formatter: function () {
+                return 'The value for <b>' + this.x +
+                    '</b> is <b>' + this.y + '</b>';
+            }
         },
         legend: {
             layout: 'vertical',
@@ -54,18 +88,26 @@ function graphScores(){
             verticalAlign: 'middle',
             borderWidth: 0
         },
+        plotOptions: {
+            series: {
+                animation: false
+            }
+        },
         series: [{
-            name: 'Tokyo',
-            data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+            name: j1,
+            data: scores[j1]
         }, {
-            name: 'New York',
-            data: [-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5]
+            name: j2,
+            data: scores[j2]
         }, {
-            name: 'Berlin',
-            data: [-0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0]
+            name: j3,
+            data: scores[j3]
         }, {
-            name: 'London',
-            data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
+            name: j4,
+            data: scores[j4]
+        },{
+            name: j5,
+            data: scores[j5]
         }]
     },function(){
         chart = $("#graph").highcharts();
@@ -78,7 +120,8 @@ function graphScores(){
 function graphFriendSuccess(){
     $('#graph').highcharts({
         chart: {
-            type: 'area'
+            type: 'area',
+            animation: false
         },
         title: {
             text: 'US and USSR nuclear stockpiles'
@@ -121,6 +164,9 @@ function graphFriendSuccess(){
                         }
                     }
                 }
+            },
+            series: {
+                animation: false
             }
         },
         series: [{
@@ -150,8 +196,9 @@ function graphFriendSuccess(){
 
 function graphDealer(){
      $('#graph').highcharts({
-            chart: {
-            type: 'column'
+        chart: {
+            type: 'column',
+            animation: false
         },
         title: {
             text: 'Monthly Average Rainfall'
@@ -193,6 +240,9 @@ function graphDealer(){
             column: {
                 pointPadding: 0.2,
                 borderWidth: 0
+            },
+            series: {
+                animation: false
             }
         },
         series: [{
@@ -223,7 +273,8 @@ function graphLuck(){
         chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
-                plotShadow: false
+                plotShadow: false,
+                animation: false
             },
             title: {
                 text: 'Browser market shares at a specific website, 2014'
@@ -239,6 +290,9 @@ function graphLuck(){
                         enabled: false
                     },
                     showInLegend: true
+                },
+                series: {
+                    animation: false
                 }
             },
             series: [{
@@ -267,6 +321,7 @@ function graphLuck(){
 function graphWinRate(){
    $('#graph').highcharts({
         chart: {
+            animation: false,
             zoomType: 'xy'
         },
         title: {
@@ -318,6 +373,10 @@ function graphWinRate(){
             y: 100,
             floating: true,
             backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+        },plotOptions: {
+            line: {
+                animation: false
+            }
         },
         series: [{
             name: 'Rainfall',
