@@ -150,13 +150,117 @@ function screenReportingHome()
 {
 	showScreen("home", "Accueil", function()
 	{
-		showPrev("Choix des joueurs", function()
+		$.ajax(
 		{
-			screenPlayers();
+			url: serverUrl + "queries.php",
+			type: "POST",
+			cache: false,
+			data:
+			{
+				func: "get_score",
+				team: teamId
+			}
+		}).done(function(data)
+		{
+			showPrev("Choix des joueurs", function()
+			{
+				screenPlayers();
+			});
+
+			$(".wrapper").append($("<div></div>").attr("id", "graph"));
+
+			calculateScore(data);
+
+			$("div#graph").highcharts({
+		        chart: {
+		            zoomType: 'x',
+		            animation: false
+		        },
+		        title: {
+		            text: 'Evolution des scores',
+		            x: -20 //center
+		        },
+		        yAxis: {
+		            title: {
+		                text: 'Points'
+		            },
+		            plotLines: [{
+		                value: 0,
+		                width: 3,
+		                color: 'black'
+		            }]
+		        },
+		        tooltip: {
+		            formatter: function () {
+		                return 'The value for <b>' + this.x +
+		                    '</b> is <b>' + this.y + '</b>';
+		            }
+		        },
+		        legend: {
+		            layout: 'vertical',
+		            align: 'right',
+		            verticalAlign: 'middle',
+		            borderWidth: 0
+		        },
+		        plotOptions: {
+		            series: {
+		                animation: false
+		            }
+		        },
+		        series: scoreForGraph
+		    },function(){
+		        //chart = $("#graph").highcharts();
+		        //chart.setSize(windowWidth,windowHeight*(4/5));
+		    });
+
+			hideLoader();
 		});
-
-		$(".wrapper").text("A toi de jouer Erwan ;)");
-
-		hideLoader();
 	});
+}
+
+var scoreForGraph = [];
+
+//Calculate score
+function calculateScore(data)
+{
+	scoreForGraph = [];
+
+	var games = eval(data);
+
+	var first = true;
+
+	var gameId = null;
+
+	for(var g in games)
+	{
+		var game = games[g];
+
+		if(first)
+		{
+			if(gameId != null && gameId != game.game)
+			{
+				first = false;
+			} else
+			{
+				scoreForGraph.push(
+				{
+					name:game.name,
+					data:[parseInt(game.score)]
+				});
+
+				gameId = game.game;
+			}
+		}
+
+		if(!first)
+		{
+			var playerTurn = g % scoreForGraph.length;
+
+			var currentArray = scoreForGraph[playerTurn].data;
+
+			var newScore = currentArray[currentArray.length - 1] + parseInt(game.score);
+
+			scoreForGraph[playerTurn].data.push(newScore);
+		}
+	}
 }
